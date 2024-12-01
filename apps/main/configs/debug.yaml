@@ -1,10 +1,9 @@
-# Template config, need to change dump_dir, data.root_dir and tokenizer.path
-
-# dump_dir: !!CHANGETHIS!!
+dump_dir: ../
 name: "debug"
 steps: 1000
-probe_freq: 100
+probe_freq: null
 seed: 777
+
 optim:
     lr: 3e-4
     warmup: 2000
@@ -20,24 +19,27 @@ distributed:
     tp_size: 1
 
 model:
-    dim: 1024
-    n_layers: 8
+  dim: 128
+  n_layers: 8
+  attention:
     n_heads: 8
+    n_kv_heads: 8
 
 data:
-    root_dir: data/shuffled
+    root_dir: data/
     sources:
-        dclm_baseline_1.0: 1.0
+        fineweb_edu_10bt_shuffled: 100.0
     batch_size: 32
     prefetch_size: 64
-    seq_len: 2048
+    seq_len: 1024
     n_views: 2
     load_async: true
     tokenizer:
-        name: bytes
+        name: sp
+        path: data/tokenizer/tokenizer.model
 
 profiling:
-    run: true
+    run: false
 
 checkpoint:
     dump:
@@ -52,13 +54,10 @@ logging:
 
 eval:
     generator:
-        max_tokens: 8192
+        max_tokens: 1024
         dtype: bf16
         temperature: 1.0
         top_p: 0.95
     harness:
         tasks:
             - hellaswag
-            - piqa
-            - task: nq_open
-              num_fewshot: 5
